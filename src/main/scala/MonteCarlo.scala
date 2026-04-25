@@ -10,10 +10,9 @@ import scala.concurrent.{Await, Future}
 //Could possibly to show proportion of a given map key to all of n
 
 //Parameters: function to apply to each input, iterable of inputs
-// Returns: Map of outputs and the number of times each occured
+// Returns: Map of outputs and the number of times each occurred
 object MonteCarlo  {
   def monteCarlo[A, B](f: A => B, inputs: Iterable[A]): Map[B, Int] = {
-
-
+    (for i <- inputs yield f(i)).groupBy(identity).iterator.map(x => (x(0), x.size)).toMap
   }
 }
