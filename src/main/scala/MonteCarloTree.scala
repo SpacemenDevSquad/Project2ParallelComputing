@@ -5,6 +5,19 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Random, Success}
 
+/**
+ * A basic Monte Carlo decision tree, optimized for simple board games. A is the current situation, b is the "player" marker
+ * @param decision A function that takes in a random input, a situation (A), and a player (B)
+ * @param isComplete A function that checks if a situation is complete (A)
+ * @param winner A function that checks to see if the situation (A) has a positive outcome for player (B)
+ * @param currMove The starting situation (A)
+ * @param player The player marker (B)
+ * @param isParallel A boolean that defines if parallel implementation should be used (default is true)
+ * @param iterations Number of iterations that should be run for a scenario (default is 5 million)
+ * @tparam A Situation
+ * @tparam B Player
+ * @return The best situation for player
+ */
 def MonteCarloTree[A, B](decision: (Double, A, B) => A, isComplete: A => Boolean, winner: (A, B) => Boolean, currMove: A, player: B, isParallel: Boolean = true, iterations: Int = 5000000): A = {
 
   def SeqTree(): A = {
