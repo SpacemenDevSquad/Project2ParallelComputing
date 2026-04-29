@@ -10,9 +10,10 @@ import scala.util.Random
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
   val inputSizeRPS = 20000000
+  val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
-  val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, functionGeneration(inputGenerationRPS, inputSizeRPS))
-  val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, functionGeneration(inputGenerationRPS, inputSizeRPS))
+  val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
+  val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
 
   println("Sequential Time Taken: " + RPSSeq._1)
   println("Parallel Time Taken: " + RPSPar._1)
@@ -24,10 +25,11 @@ import scala.util.Random
   // Area
   println("===== Area Estimation =====")
   val inputSizeArea = 20000000
+  val inputArea = functionGeneration(inputGenerationArea, inputSizeArea)
 
   println("===== Quarter Circle =====")
-  val AreaQCSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateQuarterCircle, functionGeneration(inputGenerationArea, inputSizeRPS))
-  val AreaQCPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateQuarterCircle, functionGeneration(inputGenerationArea, inputSizeRPS))
+  val AreaQCSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateQuarterCircle, inputArea)
+  val AreaQCPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateQuarterCircle, inputArea)
 
   println("Sequential Time Taken: " + AreaQCSeq._1)
   println("Parallel Time Taken: " + AreaQCPar._1)
@@ -36,8 +38,8 @@ import scala.util.Random
   println(AreaQCPar._2.getOrElse(true, 0).toDouble / (AreaQCPar._2.getOrElse(true, 0) + AreaQCPar._2.getOrElse(false, 1)))
 
   println("===== Log =====")
-  val AreaLogSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateLog, functionGeneration(inputGenerationArea, inputSizeRPS))
-  val AreaLogPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateLog, functionGeneration(inputGenerationArea, inputSizeRPS))
+  val AreaLogSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateLog, inputArea)
+  val AreaLogPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateLog, inputArea)
 
   println("Sequential Time Taken: " + AreaLogSeq._1)
   println("Parallel Time Taken: " + AreaLogPar._1)
@@ -46,8 +48,8 @@ import scala.util.Random
   println(AreaLogPar._2.getOrElse(true, 0).toDouble / (AreaLogPar._2.getOrElse(true, 0) + AreaLogPar._2.getOrElse(false, 1)))
 
   println("===== Sine =====")
-  val AreaSineSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateSine, functionGeneration(inputGenerationArea, inputSizeRPS))
-  val AreaSinePar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateSine, functionGeneration(inputGenerationArea, inputSizeRPS))
+  val AreaSineSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateSine, inputArea)
+  val AreaSinePar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateSine, inputArea)
 
   println("Sequential Time Taken: " + AreaSineSeq._1)
   println("Parallel Time Taken: " + AreaSinePar._1)
