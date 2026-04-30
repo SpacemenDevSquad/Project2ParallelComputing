@@ -181,6 +181,10 @@ def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
     }
   }
 
+  for i <- futureArray.indices do {
+    createFutureHelper(i, nextInput)
+    nextInput += 1
+  }
   MainThreadHelper()
   addToArray.toList.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
 }
