@@ -1,3 +1,4 @@
+import java.util.concurrent.{ExecutorService, Executors}
 import scala.annotation.tailrec
 import scala.collection.parallel.CollectionConverters.*
 import scala.collection.parallel.ParIterable
