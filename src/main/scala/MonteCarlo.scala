@@ -73,6 +73,16 @@ import scala.collection.mutable
   println(AreaSineSeq._2.getOrElse(true, 0).toDouble / (AreaSineSeq._2.getOrElse(true, 0) + AreaSineSeq._2.getOrElse(false, 1)))
   println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
 
+  println("===== Pi =====")
+  val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+  val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+
+  println("Sequential Time Taken: " + PiValSeq._1)
+  println("Parallel Time Taken: " + PiValPar._1)
+
+  println(4 * PiValSeq._2.getOrElse(true, 0).toDouble / (PiValSeq._2.getOrElse(true, 0) + PiValSeq._2.getOrElse(false, 1)))
+  println(4 * PiValPar._2.getOrElse(true, 0).toDouble / (PiValPar._2.getOrElse(true, 0) + PiValPar._2.getOrElse(false, 1)))
+
   println
   println
   */
@@ -243,6 +253,9 @@ val estimateQuarterCircle = estimateArea((x: Double) => Math.sqrt(1 - Math.pow(x
 val estimateLog = estimateArea((x: Double) => Math.log(x))
 
 val estimateSine = estimateArea((x: Double) => Math.sin(x * (Math.PI / 2)))
+
+val estimatePi = (point: (Double, Double)) => (Math.sqrt(Math.pow(0.5, 2) - Math.pow(point._1 - 0.5, 2)) + 0.5) >= point._2 &&
+  (-Math.sqrt(Math.pow(0.5, 2)-Math.pow(point._1 - 0.5, 2)) + 0.5) <= point._2
 
 
 /* UTILITY */
