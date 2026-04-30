@@ -3,14 +3,19 @@ import scala.collection.parallel.ParIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
+import scala.io.StdIn.readLine
 import scala.util.Random
 
 /* RUNTIME */
 @main def simulation(): Unit = {
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
-  val inputSizeRPS = 20000000
+  val inputSizeRPS = 5000000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
+
+  println("Press Enter to Start: ")
+  readLine()
 
   val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
   val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
@@ -21,11 +26,16 @@ import scala.util.Random
   println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
   println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
 
+  println
+  println
 
   // Area
   println("===== Area Estimation =====")
-  val inputSizeArea = 20000000
+  val inputSizeArea = 5000000
   val inputArea = functionGeneration(inputGenerationArea, inputSizeArea)
+
+  println("Press Enter to Start: ")
+  readLine()
 
   println("===== Quarter Circle =====")
   val AreaQCSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateQuarterCircle, inputArea)
@@ -37,6 +47,8 @@ import scala.util.Random
   println(AreaQCSeq._2.getOrElse(true, 0).toDouble / (AreaQCSeq._2.getOrElse(true, 0) + AreaQCSeq._2.getOrElse(false, 1)))
   println(AreaQCPar._2.getOrElse(true, 0).toDouble / (AreaQCPar._2.getOrElse(true, 0) + AreaQCPar._2.getOrElse(false, 1)))
 
+  println
+
   println("===== Log =====")
   val AreaLogSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateLog, inputArea)
   val AreaLogPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateLog, inputArea)
@@ -47,6 +59,8 @@ import scala.util.Random
   println(AreaLogSeq._2.getOrElse(true, 0).toDouble / (AreaLogSeq._2.getOrElse(true, 0) + AreaLogSeq._2.getOrElse(false, 1)))
   println(AreaLogPar._2.getOrElse(true, 0).toDouble / (AreaLogPar._2.getOrElse(true, 0) + AreaLogPar._2.getOrElse(false, 1)))
 
+  println
+
   println("===== Sine =====")
   val AreaSineSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateSine, inputArea)
   val AreaSinePar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateSine, inputArea)
@@ -56,6 +70,9 @@ import scala.util.Random
 
   println(AreaSineSeq._2.getOrElse(true, 0).toDouble / (AreaSineSeq._2.getOrElse(true, 0) + AreaSineSeq._2.getOrElse(false, 1)))
   println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
+
+  println
+  println
 }
 
 
@@ -69,6 +86,16 @@ def MonteCarloSeq[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
 def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
   input.par.map(f).groupBy(identity[B]).map((value: B, frequency: ParIterable[B]) => (value, frequency.size)).seq
 }
+
+// Future-Based Parallel Operation
+/* def MonteCarloFut[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+  val allFutures = Future.sequence((for item <- input yield Future{ f(item) }).toList).map(list => list.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size)))
+
+  Await.ready(allFutures, Duration.Inf).value.get match {
+    case Failure(exception) => throw exception
+    case Success(results) => results
+  }
+} */
 
 
 /* OPERATIONS */
