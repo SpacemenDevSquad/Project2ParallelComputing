@@ -26,7 +26,7 @@ import scala.collection.mutable.ListBuffer
     println("RPS Sequential Start")
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
     println("RPS Parallel Start")
-    val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
+    val RPSPar = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
     println("Parallel Time Taken: " + RPSPar._1)
@@ -140,12 +140,12 @@ import scala.collection.mutable.ListBuffer
 
 /* MONTE CARLO */
 // Rudimentary Sequential Operation
-def MonteCarloSeq[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+def MonteCarloSeq[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   input.map(f).groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
 }
 
 // Rudimentary Parallel Operation
-def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+def MonteCarloPar[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   input.par.map(f).groupBy(identity[B]).map((value: B, frequency: ParIterable[B]) => (value, frequency.size)).seq
 }
 
@@ -158,9 +158,7 @@ def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   val futureArray: Array[Future[B]] = new Array[Future[B]](numAvailableCores)
   val addToArray: ListBuffer[B] = new ListBuffer[B]
   var nextInput = 0
-
-  val allFutures = Future.sequence((for item <- input yield Future{ f(item) }).toList).map(list => list.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size)))
-
+  
   def createFutureHelper(futureIndex: Int, inputIndex: Int): Unit = futureArray(futureIndex) = Future{ f(input(inputIndex)) }
 
   def scanThreads(): Unit = {
@@ -397,7 +395,7 @@ class TTTBoard(val values: List[String]) {
 
 
 /* UTILITY */
-def timeTaken[A, B](monteCarlo: (A => B, Iterable[A]) => Map[B, Int])(function: A => B, input: Iterable[A]): (Double, Map[B, Int]) = {
+def timeTaken[A, B](monteCarlo: (A => B, List[A]) => Map[B, Int])(function: A => B, input: List[A]): (Double, Map[B, Int]) = {
   val startTime = System.currentTimeMillis()
   val result = monteCarlo(function, input)
   val endTime = System.currentTimeMillis()
