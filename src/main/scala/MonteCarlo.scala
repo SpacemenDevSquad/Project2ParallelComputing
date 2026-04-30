@@ -15,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 @main def simulation(): Unit = {
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
-  val inputSizeRPS = 5000000
+  val inputSizeRPS = 100000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
   print("Press Enter to Start (Type skip to skip): ")
@@ -27,9 +27,12 @@ import scala.collection.mutable.ListBuffer
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
     println("RPS Parallel Start")
     val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
+    println("RPS Parallel Future Start")
+    val RPSFuture = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
     println("Parallel Time Taken: " + RPSPar._1)
+    println("Future Time Taken: " + RPSFuture._1)
 
     println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
     println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
@@ -397,7 +400,7 @@ class TTTBoard(val values: List[String]) {
 
 
 /* UTILITY */
-def timeTaken[A, B](monteCarlo: (A => B, Iterable[A]) => Map[B, Int])(function: A => B, input: Iterable[A]): (Double, Map[B, Int]) = {
+def timeTaken[A, B](monteCarlo: (A => B, List[A]) => Map[B, Int])(function: A => B, input: List[A]): (Double, Map[B, Int]) = {
   val startTime = System.currentTimeMillis()
   val result = monteCarlo(function, input)
   val endTime = System.currentTimeMillis()
