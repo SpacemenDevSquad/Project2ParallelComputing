@@ -15,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 @main def simulation(): Unit = {
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
-  val inputSizeRPS = 5000000
+  val inputSizeRPS = 100000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
   print("Press Enter to Start (Type skip to skip): ")
@@ -25,9 +25,12 @@ import scala.collection.mutable.ListBuffer
   if RPSGo != "skip" then {
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
     val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
+    println("RPS Parallel Future Start")
+    val RPSFuture = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
     println("Parallel Time Taken: " + RPSPar._1)
+    println("Future Time Taken: " + RPSFuture._1)
 
     println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
     println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
@@ -100,9 +103,42 @@ import scala.collection.mutable.ListBuffer
     println(4 * PiValSeq._2.getOrElse(true, 0).toDouble / (PiValSeq._2.getOrElse(true, 0) + PiValSeq._2.getOrElse(false, 1)))
     println(4 * PiValPar._2.getOrElse(true, 0).toDouble / (PiValPar._2.getOrElse(true, 0) + PiValPar._2.getOrElse(false, 1)))
 
+//
+//  println("===== Pi =====")
+//  val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+//  val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+//
+//  println("Sequential Time Taken: " + PiValSeq._1)
+//  println("Parallel Time Taken: " + PiValPar._1)
+//
+//  println(4 * PiValSeq._2.getOrElse(true, 0).toDouble / (PiValSeq._2.getOrElse(true, 0) + PiValSeq._2.getOrElse(false, 1)))
+//  println(4 * PiValPar._2.getOrElse(true, 0).toDouble / (PiValPar._2.getOrElse(true, 0) + PiValPar._2.getOrElse(false, 1)))
+
+  println
+  println
+/*
+  println("=====Prisoner's Dilemma random v titfortat=====")
+  val inputSizePD = 5000000
+  val inputPD = functionGeneration(randomGenerationPD, inputSizePD)
+
+  println("Press Enter to Start: ")
+  readLine()
+
+  //GEORGE PLZ HELP
+  val PDSeq = timeTaken[(Int, Int, Int, Int, Int, Int, Int=>Int), Boolean](MonteCarloSeq)(randomVSstrat, inputPD)
+  val PDPar = timeTaken[(Int, Int, Int, Int, Int, Int, Int=>Int), Boolean](MonteCarloPar)(randomVSstrat, inputPD)
+
+  println("Sequential Time Taken: " + PDSeq._1)
+  println("Parallel Time Taken: " + PDPar._1)
+
+  println(PDSeq._2.getOrElse(true, 0).toDouble / (PDSeq._2.getOrElse(true, 0) + PDSeq._2.getOrElse(false, 1)))
+  println(PDPar._2.getOrElse(true, 0).toDouble / (PDPar._2.getOrElse(true, 0) + PDPar._2.getOrElse(false, 1)))
     println
     println
+
+   */
   }
+
 
   // Texas Hold-Em-Ish
   println("===== Texas Hold-Em =====")
@@ -138,12 +174,12 @@ import scala.collection.mutable.ListBuffer
 
 /* MONTE CARLO */
 // Rudimentary Sequential Operation
-def MonteCarloSeq[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+def MonteCarloSeq[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   input.map(f).groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
 }
 
 // Rudimentary Parallel Operation
-def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+def MonteCarloPar[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   input.par.map(f).groupBy(identity[B]).map((value: B, frequency: ParIterable[B]) => (value, frequency.size)).seq
 }
 
@@ -156,9 +192,7 @@ def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
   val futureArray: Array[Future[B]] = new Array[Future[B]](numAvailableCores)
   val addToArray: ListBuffer[B] = new ListBuffer[B]
   var nextInput = 0
-
-  val allFutures = Future.sequence((for item <- input yield Future{ f(item) }).toList).map(list => list.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size)))
-
+  
   def createFutureHelper(futureIndex: Int, inputIndex: Int): Unit = futureArray(futureIndex) = Future{ f(input(inputIndex)) }
 
   def scanThreads(): Unit = {
@@ -178,6 +212,10 @@ def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
     }
   }
 
+  for i <- futureArray.indices do {
+    createFutureHelper(i, nextInput)
+    nextInput += 1
+  }
   MainThreadHelper()
   addToArray.toList.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
 } */
@@ -296,7 +334,38 @@ def winningRockPaperScissors(move: Int): Boolean = {
     case _ => false
   }
 }
+//Prisoner's Dilemma
+def randomGenerationPD: Int = Random.nextInt(2)
 
+//random vs tit for tat strat
+//tit for tat starts by cooperating, then copies it's opponents move from last round
+def randomVSstrat(randMove: Int, stratMove: Int = titForTat(-1), totalRounds: Int = 5, currentRound: Int = 0, randScore: Int = 0, stratScore: Int = 0, opponentStrat: Int => Int = titForTat): Boolean = {
+
+  if (totalRounds <= 0) {
+    return false
+  }
+  if(currentRound>totalRounds){
+    if(randScore>stratScore) then return true else return false
+  }
+
+  randMove match {
+    case 0 => if stratMove == 0 then return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+1, stratScore+1, opponentStrat) else return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+0, stratScore+5, opponentStrat)
+    case 1 => if stratMove == 0 then return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+5, stratScore+0, opponentStrat) else return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+3, stratScore+3, opponentStrat)
+  }
+  false
+}
+
+def titForTat(oppLastMove: Int): Int = {
+  if oppLastMove == -1 then {
+    //titForTat cooperates for the first move when there is nothing to copy yet
+    {return 1}
+  }
+  oppLastMove match {
+    case 0 => return 0
+    case 1 => return 1
+  }
+
+}
 
 // Estimating Area (Domain: [(0, 0), (1, 1)])
 def inputGenerationArea: (Double, Double) = (Random.nextDouble(), Random.nextDouble())
@@ -395,7 +464,7 @@ class TTTBoard(val values: List[String]) {
 
 
 /* UTILITY */
-def timeTaken[A, B](monteCarlo: (A => B, Iterable[A]) => Map[B, Int])(function: A => B, input: Iterable[A]): (Double, Map[B, Int]) = {
+def timeTaken[A, B](monteCarlo: (A => B, List[A]) => Map[B, Int])(function: A => B, input: List[A]): (Double, Map[B, Int]) = {
   val startTime = System.currentTimeMillis()
   val result = monteCarlo(function, input)
   val endTime = System.currentTimeMillis()
