@@ -88,9 +88,9 @@ import scala.collection.mutable
   */
 
   println("===== Texas Hold-Em =====")
-  val inputSizeTHE = 1000
-  val numOpponentsTHE = 2
-  val playerCards = List[PlayingCard](new PlayingCard(1, 2), new PlayingCard(1, 3))
+  val inputSizeTHE = 10000
+  val numOpponentsTHE = 4
+  val playerCards = List[PlayingCard](new PlayingCard(1, 2), new PlayingCard(2, 13))
   val inputTHE = functionGeneration(inputGenerationTHE(playerCards), inputSizeTHE)
 
   println("Press Enter to Start: ")
@@ -225,7 +225,9 @@ def findPair(hand: Iterable[PlayingCard]): Boolean = {
   hand.groupBy(_.faceValue).map(_._2.size).toList.contains(2)
 }
 
-class PlayingCard(val suit: Int, val faceValue: Int)
+class PlayingCard(val suit: Int, val faceValue: Int) {
+  override def toString: String = "| Card: " + suit + " " + faceValue + " |"
+}
 
 
 // Rock-Paper-Scissors
