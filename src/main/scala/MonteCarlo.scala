@@ -3,11 +3,12 @@ import scala.collection.parallel.CollectionConverters.*
 import scala.collection.parallel.ParIterable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success}
 import scala.io.StdIn.readLine
 import scala.util.Random
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 /* RUNTIME */
 @main def simulation(): Unit = {
@@ -17,11 +18,15 @@ import scala.collection.mutable
   val inputSizeRPS = 5000000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
-  println("Press Enter to Start: ")
-  readLine()
+  print("Press Enter to Start (Type skip to skip): ")
+  val RPSGo = readLine()
+  println
 
-  val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
-  val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
+  if RPSGo != "skip" then {
+    println("RPS Sequential Start")
+    val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
+    println("RPS Parallel Start")
+    val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
 
   println("Sequential Time Taken: " + RPSSeq._1)
   println("Parallel Time Taken: " + RPSPar._1)
@@ -29,20 +34,23 @@ import scala.collection.mutable
   println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
   println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
 
-  println
-  println
+    println
+    println
+  }
 
   // Area
   println("===== Area Estimation =====")
   val inputSizeArea = 5000000
   val inputArea = functionGeneration(inputGenerationArea, inputSizeArea)
 
-  println("Press Enter to Start: ")
-  readLine()
+  print("Press Enter to Start (Type skip to skip): ")
+  val AreaGo = readLine()
+  println
 
-  println("===== Quarter Circle =====")
-  val AreaQCSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateQuarterCircle, inputArea)
-  val AreaQCPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateQuarterCircle, inputArea)
+  if AreaGo != "skip" then {
+    println("===== Quarter Circle =====")
+    val AreaQCSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimateQuarterCircle, inputArea)
+    val AreaQCPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimateQuarterCircle, inputArea)
 
   println("Sequential Time Taken: " + AreaQCSeq._1)
   println("Parallel Time Taken: " + AreaQCPar._1)
@@ -71,12 +79,22 @@ import scala.collection.mutable
   println("Sequential Time Taken: " + AreaSineSeq._1)
   println("Parallel Time Taken: " + AreaSinePar._1)
 
-  println(AreaSineSeq._2.getOrElse(true, 0).toDouble / (AreaSineSeq._2.getOrElse(true, 0) + AreaSineSeq._2.getOrElse(false, 1)))
-  println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
+    println(AreaSineSeq._2.getOrElse(true, 0).toDouble / (AreaSineSeq._2.getOrElse(true, 0) + AreaSineSeq._2.getOrElse(false, 1)))
+    println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
+  }
 
-  println("===== Pi =====")
-  val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
-  val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+  // Pi
+  println("===== Pi Estimation =====")
+  val inputSizePi = 5000000
+
+  print("Press Enter to Start (Type skip to skip): ")
+  val PiGo = readLine()
+  println
+
+  if PiGo != "skip" then {
+    println("===== Pi =====")
+    val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizePi))
+    val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizePi))
 
   println("Sequential Time Taken: " + PiValSeq._1)
   println("Parallel Time Taken: " + PiValPar._1)
@@ -84,8 +102,9 @@ import scala.collection.mutable
   println(4 * PiValSeq._2.getOrElse(true, 0).toDouble / (PiValSeq._2.getOrElse(true, 0) + PiValSeq._2.getOrElse(false, 1)))
   println(4 * PiValPar._2.getOrElse(true, 0).toDouble / (PiValPar._2.getOrElse(true, 0) + PiValPar._2.getOrElse(false, 1)))
 
-  println
-  println
+    println
+    println
+  }
 
   // Texas Hold-Em-Ish
   println("===== Texas Hold-Em =====")
@@ -94,11 +113,13 @@ import scala.collection.mutable
   val playerCards = List[PlayingCard](new PlayingCard(1, 2), new PlayingCard(2, 13))
   val inputTHE = functionGeneration(inputGenerationTHE(playerCards), inputSizeTHE)
 
-  println("Press Enter to Start: ")
-  readLine()
+  print("Press Enter to Start (Type skip to skip): ")
+  val TexasGo = readLine()
+  println
 
-  val THESeq = timeTaken[Iterable[PlayingCard], Boolean](MonteCarloSeq)(winningTexasHoldEmHand(numOpponentsTHE), inputTHE)
-  val THEPar = timeTaken[Iterable[PlayingCard], Boolean](MonteCarloPar)(winningTexasHoldEmHand(numOpponentsTHE), inputTHE)
+  if TexasGo != "skip" then {
+    val THESeq = timeTaken[Iterable[PlayingCard], Boolean](MonteCarloSeq)(winningTexasHoldEmHand(numOpponentsTHE), inputTHE)
+    val THEPar = timeTaken[Iterable[PlayingCard], Boolean](MonteCarloPar)(winningTexasHoldEmHand(numOpponentsTHE), inputTHE)
 
   println("Sequential Time Taken: " + THESeq._1)
   println("Parallel Time Taken: " + THEPar._1)
@@ -108,6 +129,7 @@ import scala.collection.mutable
 
   println
   println
+  }
   */
 
   // Tic-Tac-Toe
@@ -129,14 +151,39 @@ def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
 }
 
 // Future-Based Parallel Operation
-/* def MonteCarloFut[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
+def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
+  val numAvailableCores: Int = Runtime.getRuntime.availableProcessors() - 1
+  val executorService: ExecutorService = Executors.newFixedThreadPool(numAvailableCores)
+  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(executorService)
+
+  val futureArray: Array[Future[B]] = new Array[Future[B]](numAvailableCores)
+  val addToArray: ListBuffer[B] = new ListBuffer[B]
+  var nextInput = 0
+
   val allFutures = Future.sequence((for item <- input yield Future{ f(item) }).toList).map(list => list.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size)))
 
-  Await.ready(allFutures, Duration.Inf).value.get match {
-    case Failure(exception) => throw exception
-    case Success(results) => results
+  def createFutureHelper(futureIndex: Int, inputIndex: Int): Unit = futureArray(futureIndex) = Future{ f(input(inputIndex)) }
+
+  def scanThreads(): Unit = {
+    for i <- futureArray.indices do {
+      if futureArray(i).isCompleted then {
+        val result = futureArray(i)
+        createFutureHelper(i, nextInput)
+        addToArray += Await.result(result, Duration.Inf)
+        nextInput += 1
+      }
+    }
   }
-} */
+
+  def MainThreadHelper(): Unit = {
+    while (nextInput < input.size) {
+      scanThreads()
+    }
+  }
+
+  MainThreadHelper()
+  addToArray.toList.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
+}
 
 
 /* OPERATIONS */
