@@ -86,6 +86,23 @@ import scala.collection.mutable
   println
   println
   */
+  println("=====Prisoner's Dilemma random v titfortat=====")
+  val inputSizePD = 5000000
+  val inputPD = functionGeneration(randomGenerationPD, inputSizePD)
+
+  println("Press Enter to Start: ")
+  readLine()
+
+  //GEORGE PLZ HELP
+  val PDSeq = timeTaken[(Int, Int, Int, Int, Int, Int, Int=>Int), Boolean](MonteCarloSeq)(randomVSstrat, inputPD)
+  val PDPar = timeTaken[(Int, Int, Int, Int, Int, Int, Int=>Int), Boolean](MonteCarloPar)(randomVSstrat, inputPD)
+
+  println("Sequential Time Taken: " + PDSeq._1)
+  println("Parallel Time Taken: " + PDPar._1)
+
+  println(PDSeq._2.getOrElse(true, 0).toDouble / (PDSeq._2.getOrElse(true, 0) + PDSeq._2.getOrElse(false, 1)))
+  println(PDPar._2.getOrElse(true, 0).toDouble / (PDPar._2.getOrElse(true, 0) + PDPar._2.getOrElse(false, 1)))
+
 
   println("===== Texas Hold-Em =====")
   val inputSizeTHE = 10000
@@ -243,7 +260,38 @@ def winningRockPaperScissors(move: Int): Boolean = {
     case _ => false
   }
 }
+//Prisoner's Dilemma
+def randomGenerationPD: Int = Random.nextInt(2)
 
+//random vs tit for tat strat
+//tit for tat starts by cooperating, then copies it's opponents move from last round
+def randomVSstrat(randMove: Int, stratMove: Int = titForTat(-1), totalRounds: Int = 5, currentRound: Int = 0, randScore: Int = 0, stratScore: Int = 0, opponentStrat: Int => Int = titForTat): Boolean = {
+
+  if (totalRounds <= 0) {
+    return false
+  }
+  if(currentRound>totalRounds){
+    if(randScore>stratScore) then return true else return false
+  }
+
+  randMove match {
+    case 0 => if stratMove == 0 then return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+1, stratScore+1, opponentStrat) else return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+0, stratScore+5, opponentStrat)
+    case 1 => if stratMove == 0 then return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+5, stratScore+0, opponentStrat) else return randomVSstrat(randomGenerationPD, opponentStrat(randMove), totalRounds, currentRound+1, randScore+3, stratScore+3, opponentStrat)
+  }
+  false
+}
+
+def titForTat(oppLastMove: Int): Int = {
+  if oppLastMove == -1 then {
+    //titForTat cooperates for the first move when there is nothing to copy yet
+    {return 1}
+  }
+  oppLastMove match {
+    case 0 => return 0
+    case 1 => return 1
+  }
+
+}
 
 // Estimating Area (Domain: [(0, 0), (1, 1)])
 def inputGenerationArea: (Double, Double) = (Random.nextDouble(), Random.nextDouble())
