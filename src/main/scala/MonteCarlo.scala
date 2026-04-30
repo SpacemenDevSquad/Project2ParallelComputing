@@ -23,9 +23,7 @@ import scala.collection.mutable.ListBuffer
   println
 
   if RPSGo != "skip" then {
-    println("RPS Sequential Start")
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
-    println("RPS Parallel Start")
     val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
@@ -108,7 +106,7 @@ import scala.collection.mutable.ListBuffer
 
   // Texas Hold-Em-Ish
   println("===== Texas Hold-Em =====")
-  val inputSizeTHE = 10000
+  val inputSizeTHE = 5000
   val numOpponentsTHE = 4
   val playerCards = List[PlayingCard](new PlayingCard(1, 2), new PlayingCard(2, 13))
   val inputTHE = functionGeneration(inputGenerationTHE(playerCards), inputSizeTHE)
@@ -150,7 +148,7 @@ def MonteCarloPar[A, B](f: A => B, input: Iterable[A]): Map[B, Int] = {
 }
 
 // Future-Based Parallel Operation
-def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
+/* def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   val numAvailableCores: Int = Runtime.getRuntime.availableProcessors() - 1
   val executorService: ExecutorService = Executors.newFixedThreadPool(numAvailableCores)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(executorService)
@@ -182,7 +180,7 @@ def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
 
   MainThreadHelper()
   addToArray.toList.groupBy(identity[B]).map((value: B, frequency: Iterable[B]) => (value, frequency.size))
-}
+} */
 
 
 /* OPERATIONS */
