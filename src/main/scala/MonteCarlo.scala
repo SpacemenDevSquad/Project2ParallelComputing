@@ -25,12 +25,9 @@ import scala.collection.mutable.ListBuffer
   if RPSGo != "skip" then {
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
     val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
-    println("RPS Parallel Future Start")
-    val RPSFuture = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
     println("Parallel Time Taken: " + RPSPar._1)
-    println("Future Time Taken: " + RPSFuture._1)
 
     println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
     println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
@@ -116,7 +113,7 @@ import scala.collection.mutable.ListBuffer
 
   println
   println
-/*
+/* Issues
   println("=====Prisoner's Dilemma random v titfortat=====")
   val inputSizePD = 5000000
   val inputPD = functionGeneration(randomGenerationPD, inputSizePD)
