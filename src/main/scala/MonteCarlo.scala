@@ -76,10 +76,20 @@ import scala.collection.mutable
 
     println(AreaSineSeq._2.getOrElse(true, 0).toDouble / (AreaSineSeq._2.getOrElse(true, 0) + AreaSineSeq._2.getOrElse(false, 1)))
     println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
+  }
 
+  // Pi
+  println("===== Pi Estimation =====")
+  val inputSizePi = 5000000
+
+  print("Press Enter to Start (Type skip to skip): ")
+  val PiGo = readLine()
+  println
+
+  if PiGo != "skip" then {
     println("===== Pi =====")
-    val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
-    val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+    val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizePi))
+    val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizePi))
 
     println("Sequential Time Taken: " + PiValSeq._1)
     println("Parallel Time Taken: " + PiValPar._1)
