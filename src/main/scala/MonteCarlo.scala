@@ -15,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 @main def simulation(): Unit = {
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
-  val inputSizeRPS = 5000000
+  val inputSizeRPS = 100000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
   print("Press Enter to Start (Type skip to skip): ")
@@ -26,10 +26,13 @@ import scala.collection.mutable.ListBuffer
     println("RPS Sequential Start")
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
     println("RPS Parallel Start")
-    val RPSPar = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
+    val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
+    println("RPS Parallel Future Start")
+    val RPSFuture = timeTaken[Int, Boolean](MonteCarloFut)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
     println("Parallel Time Taken: " + RPSPar._1)
+    println("Future Time Taken: " + RPSFuture._1)
 
     println(RPSSeq._2.getOrElse(true, 0).toDouble / (RPSSeq._2.getOrElse(true, 0) + RPSSeq._2.getOrElse(false, 1)))
     println(RPSPar._2.getOrElse(true, 0).toDouble / (RPSPar._2.getOrElse(true, 0) + RPSPar._2.getOrElse(false, 1)))
