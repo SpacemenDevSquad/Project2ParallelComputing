@@ -14,7 +14,7 @@ import scala.util.Random
   val inputSizeRPS = 5000000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
-  println("Press Enter to Start: ")
+  print("Press Enter to Start: ")
   readLine()
 
   val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
@@ -34,7 +34,7 @@ import scala.util.Random
   val inputSizeArea = 5000000
   val inputArea = functionGeneration(inputGenerationArea, inputSizeArea)
 
-  println("Press Enter to Start: ")
+  print("Press Enter to Start: ")
   readLine()
 
   println("===== Quarter Circle =====")
@@ -72,8 +72,8 @@ import scala.util.Random
   println(AreaSinePar._2.getOrElse(true, 0).toDouble / (AreaSinePar._2.getOrElse(true, 0) + AreaSinePar._2.getOrElse(false, 1)))
 
   println("===== Pi =====")
-  val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputRPS))
-  val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputRPS))
+  val PiValSeq = timeTaken[(Double, Double), Boolean](MonteCarloSeq)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
+  val PiValPar = timeTaken[(Double, Double), Boolean](MonteCarloPar)(estimatePi, functionGeneration(inputGenerationArea, inputSizeRPS))
 
   println("Sequential Time Taken: " + PiValSeq._1)
   println("Parallel Time Taken: " + PiValPar._1)
