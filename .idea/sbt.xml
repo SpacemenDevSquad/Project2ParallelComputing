@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="C:\Users\BRUMBACHPM23\Documents\Unity\Project2ParallelComputing" />
-            <option value="C:\Users\BRUMBACHPM23\Documents\Unity\Project2ParallelComputing\project" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/project" />
           </set>
         </option>
         <option name="resolveSbtClassifiers" value="true" />
