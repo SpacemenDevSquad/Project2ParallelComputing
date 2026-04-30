@@ -15,7 +15,7 @@ import scala.collection.mutable.ListBuffer
 
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
-  val inputSizeRPS = 5000000
+  val inputSizeRPS = 100000000
   val inputRPS = functionGeneration(inputGenerationRPS, inputSizeRPS)
 
   print("Press Enter to Start (Type skip to skip): ")
@@ -23,7 +23,9 @@ import scala.collection.mutable.ListBuffer
   println
 
   if RPSGo != "skip" then {
+    println("RPS Sequential Start")
     val RPSSeq = timeTaken[Int, Boolean](MonteCarloSeq)(winningRockPaperScissors, inputRPS)
+    println("RPS Parallel Start")
     val RPSPar = timeTaken[Int, Boolean](MonteCarloPar)(winningRockPaperScissors, inputRPS)
 
     println("Sequential Time Taken: " + RPSSeq._1)
@@ -35,6 +37,8 @@ import scala.collection.mutable.ListBuffer
     println
     println
   }
+
+  /*
   // Area
   println("===== Area Estimation =====")
   val inputSizeArea = 5000000
@@ -126,6 +130,7 @@ import scala.collection.mutable.ListBuffer
     println
     println
   }
+  */
 }
 
 
