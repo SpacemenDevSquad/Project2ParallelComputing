@@ -1,3 +1,4 @@
+/*
 import java.util.concurrent.{ExecutorService, Executors}
 import scala.annotation.tailrec
 import scala.collection.parallel.CollectionConverters.*
@@ -11,7 +12,7 @@ import scala.util.Random
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-/* RUNTIME */
+RUNTIME
 @main def simulation(): Unit = {
   // Rock-Paper-Scissors
   println("===== Rock-Paper-Scissors =====")
@@ -168,7 +169,9 @@ import scala.collection.mutable.ListBuffer
   winningTTT(inputSizeTTT)("X", new TTTBoard(("X", "X", " ", "O", " ", "O", "O", " ", " ").toList))
 }
 
+ */
 
+/*
 /* MONTE CARLO */
 // Rudimentary Sequential Operation
 def MonteCarloSeq[A, B](f: A => B, input: List[A]): Map[B, Int] = {
@@ -181,7 +184,7 @@ def MonteCarloPar[A, B](f: A => B, input: List[A]): Map[B, Int] = {
 }
 
 // Future-Based Parallel Operation
-/* def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
+ def MonteCarloFut[A, B](f: A => B, input: List[A]): Map[B, Int] = {
   val numAvailableCores: Int = Runtime.getRuntime.availableProcessors() - 1
   val executorService: ExecutorService = Executors.newFixedThreadPool(numAvailableCores)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(executorService)
@@ -218,7 +221,7 @@ def MonteCarloPar[A, B](f: A => B, input: List[A]): Map[B, Int] = {
 } */
 
 
-/* OPERATIONS */
+/* OPERATIONS
 // Texas Hold-Em-Ish
 def inputGenerationTHE(hand: Iterable[PlayingCard]): Iterable[PlayingCard] = hand
 
@@ -274,7 +277,6 @@ def highestCombination(hand: Iterable[PlayingCard]): Int = {
 }
 
 def findStraightFlush(hand: Iterable[PlayingCard]): Boolean = {
-  // TODO: Proper Implementation
   findStraight(hand) && findFlush(hand)
 }
 
@@ -317,7 +319,9 @@ class PlayingCard(val suit: Int, val faceValue: Int) {
   override def toString: String = "| Card: " + suit + " " + faceValue + " |"
 }
 
+*/
 
+/*
 // Rock-Paper-Scissors
 def inputGenerationRPS: Int = Random.nextInt(3)
 
@@ -331,6 +335,9 @@ def winningRockPaperScissors(move: Int): Boolean = {
     case _ => false
   }
 }
+*/
+
+/*
 //Prisoner's Dilemma
 def randomGenerationPD: Int = Random.nextInt(2)
 
@@ -364,6 +371,9 @@ def titForTat(oppLastMove: Int): Int = {
 
 }
 
+ */
+
+/*
 // Estimating Area (Domain: [(0, 0), (1, 1)])
 def inputGenerationArea: (Double, Double) = (Random.nextDouble(), Random.nextDouble())
 
@@ -377,8 +387,9 @@ val estimateSine = estimateArea((x: Double) => Math.sin(x * (Math.PI / 2)))
 
 val estimatePi = (point: (Double, Double)) => (Math.sqrt(Math.pow(0.5, 2) - Math.pow(point._1 - 0.5, 2)) + 0.5) >= point._2 &&
   (-Math.sqrt(Math.pow(0.5, 2)-Math.pow(point._1 - 0.5, 2)) + 0.5) <= point._2
+*/
 
-
+/*
 // Tic-Tac-Toe
 def inputGenerationTTT(boardState: TTTBoard): TTTBoard = boardState
 
@@ -458,9 +469,10 @@ class TTTBoard(val values: List[String]) {
     else values(index) + " | "
   }).mkString
 }
+*/
 
 
-/* UTILITY */
+/* UTILITY
 def timeTaken[A, B](monteCarlo: (A => B, List[A]) => Map[B, Int])(function: A => B, input: List[A]): (Double, Map[B, Int]) = {
   val startTime = System.currentTimeMillis()
   val result = monteCarlo(function, input)
@@ -470,3 +482,4 @@ def timeTaken[A, B](monteCarlo: (A => B, List[A]) => Map[B, Int])(function: A =>
 }
 
 def functionGeneration[A](input: => A, times: Int): List[A] = (for i <- 1 to times yield input).toList
+*/

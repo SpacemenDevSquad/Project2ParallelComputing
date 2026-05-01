@@ -1,45 +1,82 @@
+import scala.annotation.tailrec
 import scala.util.Random
 
-val startBoard: List[String] =
-  ( " ", " ", " ",
-    " ", " ", " ",
-    " ", " ", " " ).toList
+// Tic-Tac-Toe
+def inputGenerationTTT(boardState: TTTBoard): TTTBoard = boardState
 
-@main def findBestStartingMove(): Unit = {
-  println(MonteCarloTree[List[String], String](TicTacToeDecision, TicTacToeComplete, TicTacToeWinner, startBoard, "x"))
+def winningTTT(inputSizeTTT: Int)(player: String, boardState: TTTBoard): Unit = {
+  val validMoves = findValidMoves(player, boardState)
+
+  for validMove <- validMoves do {
+    val inputTTT = functionGeneration(inputGenerationTTT(validMove), inputSizeTTT)
+    val otherPlayer = if player == "X" then "O" else "X"
+
+    println("= Option =")
+    println(validMove.toString)
+    println
+
+    val TTTSeq = timeTaken[TTTBoard, Boolean](MonteCarloSeq)(exploreBoard(player)(otherPlayer), inputTTT)
+    val TTTPar = timeTaken[TTTBoard, Boolean](MonteCarloPar)(exploreBoard(player)(otherPlayer), inputTTT)
+
+    println("Sequential Time Taken: " + TTTSeq._1)
+    println("Parallel Time Taken: " + TTTPar._1)
+
+    println(TTTSeq._2.getOrElse(true, 0).toDouble / (TTTSeq._2.getOrElse(true, 0) + TTTSeq._2.getOrElse(false, 1)))
+    println(TTTPar._2.getOrElse(true, 0).toDouble / (TTTPar._2.getOrElse(true, 0) + TTTPar._2.getOrElse(false, 1)))
+
+    println
+  }
 }
 
-def TicTacToeDecision(rand: Double, board: List[String], player: String): List[String] = {
+@tailrec
+def exploreBoard(player: String)(currentPlayer: String)(boardState: TTTBoard): Boolean = {
+  val results = testWin(boardState)
+  if results._1 then return results._2 == player
 
-  def helper(r: Double, b: List[String], p: String): List[String] = {
+  val otherPlayer = if currentPlayer == "X" then "O" else "X"
+  val validMoves = findValidMoves(otherPlayer, boardState)
 
-    var chosenSpot: Int = Math.round(r * (b.count(_ == " ") - 1)).toInt
-    (for i <- b.indices yield {
-      if b(i) == " " then chosenSpot -= 1
-      if chosenSpot == -1 then {
-        chosenSpot = -2
-        p
-      } else b(i)
-    }).toList
+  if validMoves.isEmpty then return false
+
+  exploreBoard(player)(otherPlayer)(validMoves(Random.nextInt(validMoves.size)))
+}
+
+def findValidMoves(player: String, boardState: TTTBoard): List[TTTBoard] = {
+  (for placement <- 0 until boardState.values.length if boardState.values(placement) == " " yield boardState.move(placement, player)).toList
+}
+
+def testWin(boardState: TTTBoard): (Boolean, String) = {
+  if testColumns(boardState, "X") || testRows(boardState, "X") || testDiagonals(boardState, "X") then (true, "X")
+  else if testColumns(boardState, "O") || testRows(boardState, "O") || testDiagonals(boardState, "O") then (true, "O")
+  else (false, " ")
+}
+
+def testColumns(boardState: TTTBoard, player: String): Boolean = {
+  (boardState.values(0) == player && boardState.values(3) == player && boardState.values(6) == player) ||
+    (boardState.values(1) == player && boardState.values(4) == player && boardState.values(7) == player) ||
+    (boardState.values(2) == player && boardState.values(5) == player && boardState.values(8) == player)
+}
+
+def testRows(boardState: TTTBoard, player: String): Boolean = {
+  (boardState.values(0) == player && boardState.values(1) == player && boardState.values(2) == player) ||
+    (boardState.values(3) == player && boardState.values(4) == player && boardState.values(5) == player) ||
+    (boardState.values(6) == player && boardState.values(7) == player && boardState.values(8) == player)
+}
+
+def testDiagonals(boardState: TTTBoard, player: String): Boolean = {
+  (boardState.values(0) == player && boardState.values(5) == player && boardState.values(8) == player) ||
+    (boardState.values(2) == player && boardState.values(5) == player && boardState.values(6) == player)
+}
+
+class TTTBoard(val values: List[String]) {
+  def move(placement: Int, player: String): TTTBoard = {
+    val newBoardState = (for index <- 0 until values.size yield if index == placement then player else values(index)).toList
+    new TTTBoard(newBoardState)
   }
 
-  val otherPlayer: String = if player == "x" then "o" else "x"
-  if board.count(_ == " ") > 1 then helper(Random().nextDouble(), helper(rand, board, player), otherPlayer)
-  else helper(rand, board, player)
-}
-
-def TicTacToeComplete(board: List[String]): Boolean = {
-  board.count(_ == " ") == 0 || TicTacToeWinner(board, "x") || TicTacToeWinner(board, "o")
-}
-
-
-def TicTacToeWinner(board: List[String], player: String): Boolean = {
-  var isTrue = false
-  for i <- 0 to 2 do {
-    if board(0+i*3) == player && board(1+i*3) == player && board(2+i*3) == player then isTrue = true
-    if board(i) == player && board(i+3) == player && board(i+6) == player then isTrue = true
-  }
-  if board.head == player && board(4) == player && board(8) == player then isTrue = true
-  if board(2) == player && board(4) == player && board(6) == player then isTrue = true
-  isTrue
+  override def toString: String = (for index <- 0 until values.size yield {
+    if index == 2 || index == 5 then values(index) + "\n---------\n"
+    else if index == 8 then values(index) + "\n"
+    else values(index) + " | "
+  }).mkString
 }
